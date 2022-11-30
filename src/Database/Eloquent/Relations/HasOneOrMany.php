@@ -23,12 +23,13 @@ trait HasOneOrMany
             //If the foreign key is an array (multi-column relationship), we adjust the query.
             if (is_array($this->foreignKey)) {
                 $allParentKeyValuesAreNull = array_unique($parentKeyValue) === [null];
-
                 foreach ($this->foreignKey as $index => $key) {
-                    $tmp = explode('.', $key);
-                    $key = end($tmp);
-                    $fullKey = $this->getRelated()
-                            ->getTable().'.'.$key;
+                    $keyPortions = explode('.', $key);
+                    if(count($keyPortions) === 2)
+                        $fullKey = $this->getRelated()->getTable() . '.' . $key;
+                    else
+                        $fullKey = $key;
+
                     $this->query->where($fullKey, '=', $parentKeyValue[$index]);
 
                     if ($allParentKeyValuesAreNull) {
